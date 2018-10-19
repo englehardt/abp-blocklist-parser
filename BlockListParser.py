@@ -9,8 +9,9 @@ class BlockListParser:
     """Creates maps of shortcut hashes with regex of the urls"""
 
     def __init__(self, regex_file=None, regexes=None, shortcut_sizes=None,
-                 print_maps=False, support_hash=False):
+                 print_maps=False, support_hash=False, name=None):
         """Initializes the shortcut to Parser map"""
+        self._name = name
         if regex_file is None:
             regex_lines = regexes
         else:
