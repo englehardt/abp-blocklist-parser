@@ -4,16 +4,19 @@ import re
 from FastHash import FastHash
 from RegexParser import Parser
 
+
 class BlockListParser:
     """Creates maps of shortcut hashes with regex of the urls"""
 
-    def __init__(self, regex_file=None, regexes=None, shortcut_sizes=None, print_maps=False, support_hash=False):
+    def __init__(self, regex_file=None, regexes=None, shortcut_sizes=None,
+                 print_maps=False, support_hash=False):
         """Initializes the shortcut to Parser map"""
         if regex_file is None:
             regex_lines = regexes
         else:
             with open(regex_file) as f:
-                regex_lines = [x for x in f.read().strip().split('\n') if x != '' and not x.startswith('#')]
+                regex_lines = [x for x in f.read().strip().split('\n')
+                               if x != '' and not x.startswith('#')]
         self.regex_lines = regex_lines
         self.fast_hashes = []
         self.print_maps = print_maps
@@ -21,11 +24,14 @@ class BlockListParser:
         if shortcut_sizes:
             self.shortcut_sizes = shortcut_sizes
         else:
-            self.shortcut_sizes = self._determine_shortcut_sizes(len(regex_lines))
+            self.shortcut_sizes = self._determine_shortcut_sizes(
+                len(regex_lines))
         for shortcut_size in self.shortcut_sizes:
             self.fast_hashes.append(FastHash(shortcut_size))
-        all_shortcut_url_maps, remaining_lines = self._get_all_shortcut_url_maps(regex_lines)
-        self.all_shortcut_parser_maps = self._get_all_shortcut_parser_maps(all_shortcut_url_maps)
+        rv = self._get_all_shortcut_url_maps(regex_lines)
+        all_shortcut_url_maps, remaining_lines = rv
+        self.all_shortcut_parser_maps = self._get_all_shortcut_parser_maps(
+            all_shortcut_url_maps)
         self.remaining_regex = self._convert_to_regex(remaining_lines)
 
     def get_num_classes(self):
@@ -215,10 +221,14 @@ class BlockListParser:
                 num_shortcuts_stored[num] = [shortcut]
         print(num_shortcuts)
 
-    def _print_statistics_of_map(self, shortcut_size, total_rules, total_comments,
-                                 total_shortcuts, total_secondary_lines, shortcut_url_map):
-        print("**********     Shortcut size is %d     **********" % shortcut_size)
-        print("Number of rules = ", total_rules, ", comments = ", total_comments)
+    def _print_statistics_of_map(
+            self, shortcut_size, total_rules, total_comments,
+            total_shortcuts, total_secondary_lines, shortcut_url_map):
+        print(
+            "**********     Shortcut size is %d     **********" %
+            shortcut_size)
+        print(
+            "Number of rules = ", total_rules, ", comments = ", total_comments)
         print("Shortcuts found for ", total_shortcuts, " rules")
         print("Shortcuts not found for ", total_secondary_lines, " rules")
         print("Number map is")
@@ -253,7 +263,8 @@ class BlockListParser:
                         shortcut_url_map[cur_s] = [line]
                         flag = 1
                         break
-                    if min_count == -1 or len(shortcut_url_map[cur_s]) < min_count:
+                    if (min_count == -1 or
+                            len(shortcut_url_map[cur_s]) < min_count):
                         min_count = len(shortcut_url_map[cur_s])
                         min_s = cur_s
                 if flag == 1:
@@ -261,15 +272,17 @@ class BlockListParser:
             if flag == 0:
                 shortcut_url_map[min_s].append(line)
         if self.print_maps:
-            self._print_statistics_of_map(shortcut_size, total_rules, total_comments,
-                                          total_shortcuts, len(secondary_lines), shortcut_url_map)
+            self._print_statistics_of_map(
+                shortcut_size, total_rules, total_comments,
+                total_shortcuts, len(secondary_lines), shortcut_url_map)
         return shortcut_url_map, secondary_lines
 
     def _get_all_shortcut_url_maps(self, lines):
         all_shortcut_url_maps = []
         for shortcut_size in self.shortcut_sizes:
             pat = re.compile(r'[\w\/\=\.\-\?\;\,\&]{%d,}' % shortcut_size)
-            shortcut_url_map, lines = self._get_shortcut_url_map(pat, lines, shortcut_size)
+            shortcut_url_map, lines = self._get_shortcut_url_map(
+                pat, lines, shortcut_size)
             all_shortcut_url_maps.append(shortcut_url_map)
         return all_shortcut_url_maps, lines
 
@@ -279,18 +292,22 @@ class BlockListParser:
             for shortcut in shortcut_url_map:
                 hash_value = fast_hash.compute_hash(shortcut)
                 if hash_value in shortcut_parser_map:
-                    shortcut_parser_map[hash_value].append(shortcut_url_map[shortcut])
+                    shortcut_parser_map[hash_value].append(
+                        shortcut_url_map[shortcut])
                 else:
                     shortcut_parser_map[hash_value] = shortcut_url_map[shortcut]
             for hash_key in shortcut_parser_map:
-                shortcut_parser_map[hash_key] = self._convert_to_regex(shortcut_parser_map[hash_key])
+                shortcut_parser_map[hash_key] = self._convert_to_regex(
+                    shortcut_parser_map[hash_key])
         else:
             for shortcut in shortcut_url_map:
-                shortcut_parser_map[shortcut] = self._convert_to_regex(shortcut_url_map[shortcut])
+                shortcut_parser_map[shortcut] = self._convert_to_regex(
+                    shortcut_url_map[shortcut])
         return shortcut_parser_map
 
     def _get_all_shortcut_parser_maps(self, all_shortcut_url_maps):
         all_shortcut_parser_maps = []
         for fast_hash, shortcut_url_map in zip(self.fast_hashes, all_shortcut_url_maps):
-            all_shortcut_parser_maps.append(self._get_shortcut_parser_map(fast_hash, shortcut_url_map))
+            all_shortcut_parser_maps.append(
+                self._get_shortcut_parser_map(fast_hash, shortcut_url_map))
         return all_shortcut_parser_maps

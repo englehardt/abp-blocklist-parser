@@ -1,7 +1,8 @@
 from __future__ import print_function
 
 from BlockListParser import BlockListParser
-import time, sys
+import time
+import sys
 
 privacy_list = "../../blacklists/easyprivacy.txt"
 ad_list = "../../blacklists/easylist.txt"

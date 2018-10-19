@@ -1,12 +1,14 @@
 from __future__ import print_function
 
 from BlockListParser import BlockListParser
-import time, sys
+import time
+import sys
 
 from netlib.odict import ODictCaseless
 from publicsuffix import PublicSuffixList
 from urlparse import urlparse
 import sqlite3
+
 
 def fetchiter(cursor):
     """ Generator for cursor results """
@@ -16,9 +18,12 @@ def fetchiter(cursor):
             break
         yield row
 
+
 psl = PublicSuffixList()
 
 # get options dict from url top_url and header of http response
+
+
 def get_option_dict(url, top_url, content_type):
     options = {}
     options["image"] = False
@@ -26,7 +31,8 @@ def get_option_dict(url, top_url, content_type):
     options["third-party"] = False
     options["domain"] = ""
 
-    image_types = ['tif', 'tiff', 'gif', 'jpeg', 'jpg', 'jif', 'jfif', 'jp2', 'jpx', 'j2k', 'j2c', 'fpx', 'pcd', 'png']
+    image_types = ['tif', 'tiff', 'gif', 'jpeg', 'jpg', 'jif',
+                   'jfif', 'jp2', 'jpx', 'j2k', 'j2c', 'fpx', 'pcd', 'png']
     script_types = ['js']
     # check if its an image
     if content_type is not None:
@@ -49,6 +55,7 @@ def get_option_dict(url, top_url, content_type):
     options["domain"] = top_hostname
     return options
 
+
 privacy_list = "../../blacklists/easyprivacy.txt"
 ad_list = "../../blacklists/easylist.txt"
 ad_list5 = "../../blacklists/easylist_5.txt"
@@ -67,14 +74,15 @@ cur = con.cursor()
 # Increase the cache size of the DB
 # current size is 10GB
 cur.execute("PRAGMA cache_size = -%i" % 10**7)
-cur.execute("PRAGMA temp_store = 2") # Store temp tables, indicies in memory
+cur.execute("PRAGMA temp_store = 2")  # Store temp tables, indicies in memory
 
 ids = sys.argv[1]
 id_list = ids.split()
 for id in id_list:
     id = int(id)
     print("\n*****ID:", id)
-    cur.execute("SELECT url, top_url, content_type FROM %s WHERE id = %d" % (use_table_name, id))
+    cur.execute("SELECT url, top_url, content_type FROM %s WHERE id = %d" % (
+        use_table_name, id))
     for url, top_url, content_type in fetchiter(cur):
         print("*****URL:", url)
         print("*****TOP_URL:", top_url)

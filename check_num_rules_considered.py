@@ -31,4 +31,5 @@ with open('../../blacklists/easylist.txt') as f:
 print("Considered rules:", count_correct, count_correct*100.0/total, "%")
 print("Comments:", count_comment, count_comment*100.0/total, "%")
 print("HTML rules:", count_html, count_html*100.0/total, "%")
-print("Rest remaining:", total - (count_correct + count_comment + count_html), (total - (count_correct + count_comment + count_html))*100.0/total, "%")
+print("Rest remaining:", total - (count_correct + count_comment + count_html),
+      (total - (count_correct + count_comment + count_html))*100.0/total, "%")

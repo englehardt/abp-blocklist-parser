@@ -3,6 +3,7 @@ from __future__ import print_function
 import re
 from collections import defaultdict
 
+
 class SingleRuleParser:
 
     BINARY_OPTIONS = [
@@ -26,7 +27,8 @@ class SingleRuleParser:
         "collapse",
         "donottrack",
     ]
-    OPTIONS_SPLIT_PAT = ',(?=~?(?:%s))' % ('|'.join(BINARY_OPTIONS + ["domain"]))
+    OPTIONS_SPLIT_PAT = ',(?=~?(?:%s))' % (
+        '|'.join(BINARY_OPTIONS + ["domain"]))
     OPTIONS_SPLIT_RE = re.compile(OPTIONS_SPLIT_PAT)
 
     def __init__(self, rule_text):
@@ -38,7 +40,8 @@ class SingleRuleParser:
         if self.is_comment:
             self.is_html_rule = self.is_exception = False
         else:
-            self.is_html_rule = '##' in rule_text or '#@#' in rule_text  # or rule_text.startswith('#')
+            # or rule_text.startswith('#')
+            self.is_html_rule = '##' in rule_text or '#@#' in rule_text
             self.is_exception = rule_text.startswith('@@')
             if self.is_exception:
                 rule_text = rule_text[2:]
@@ -46,11 +49,13 @@ class SingleRuleParser:
         if not self.is_comment and '$' in rule_text:
             rule_text, options_text = rule_text.split('$', 1)
             self.raw_options = self._split_options(options_text)
-            self.options = dict(self._parse_option(opt) for opt in self.raw_options)
+            self.options = dict(self._parse_option(opt)
+                                for opt in self.raw_options)
         else:
             self.raw_options = []
             self.options = {}
-        self._options_keys = frozenset(self.options.keys()) - set(['match-case'])
+        self._options_keys = frozenset(
+            self.options.keys()) - set(['match-case'])
 
         self.rule_text = rule_text
 
@@ -172,6 +177,7 @@ class SingleRuleParser:
     def get_rule(self):
         return self.raw_rule_text
 
+
 class Parser:
 
     def __init__(self, rules, rule_cls=SingleRuleParser):
@@ -182,7 +188,8 @@ class Parser:
         for r in rules:
             self.rules.append(rule_cls(r))
 
-        advanced_rules, basic_rules = split_data(self.rules, lambda r: r.options)
+        advanced_rules, basic_rules = split_data(
+            self.rules, lambda r: r.options)
 
         # TODO: what about ~rules? Should we match them earlier?
         domain_required_rules, non_domain_rules = split_data(
@@ -195,8 +202,10 @@ class Parser:
 
         # split rules into blacklists and whitelists
         self.blacklist, self.whitelist = self._split_bw(basic_rules)
-        self.blacklist_with_options, self.whitelist_with_options = self._split_bw(non_domain_rules)
-        self.blacklist_require_domain, self.whitelist_require_domain = self._split_bw_domain(domain_required_rules)
+        self.blacklist_with_options, self.whitelist_with_options = self._split_bw(
+            non_domain_rules)
+        self.blacklist_require_domain, self.whitelist_require_domain = self._split_bw_domain(
+            domain_required_rules)
 
     def check(self, url, options=None):
         options = options or {}
@@ -277,7 +286,7 @@ class Parser:
         for rule in self.blacklist:
             print("1:", rule.get_rule())
         for rule in self.whitelist:
-            print("2:",rule.get_rule())
+            print("2:", rule.get_rule())
         for domain in self.blacklist_require_domain:
             for rule in self.blacklist_require_domain[domain]:
                 print("3:", domain, ":", rule.get_rule())
