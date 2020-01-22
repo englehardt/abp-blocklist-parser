@@ -1,8 +1,8 @@
 from __future__ import print_function
 
 import re
-from FastHash import FastHash
-from RegexParser import Parser
+from abp_blocklist_parser.FastHash import FastHash
+from abp_blocklist_parser.RegexParser import Parser
 
 
 class BlockListParser:
