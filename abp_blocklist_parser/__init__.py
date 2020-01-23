@@ -1,3 +1,3 @@
 # flake8: noqa
 name = "abp_blocklist_parser"
-from BlockListParser import BlockListParser
+from abp_blocklist_parser.BlockListParser import BlockListParser
