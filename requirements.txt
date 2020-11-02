@@ -1,0 +1,3 @@
+# This file only contains development requirements the final library is freestanding
+pytest
+requests

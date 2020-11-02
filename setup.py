@@ -16,7 +16,7 @@ setuptools.setup(
     name='abp-blocklist-parser',
     license='GPL v3',
     url='https://github.com/englehardt/abp-blocklist-parser',
-    version='0.2',
+    version='0.3',
     packages=['abp_blocklist_parser'],
 
     # Dependencies

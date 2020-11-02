@@ -35,6 +35,9 @@ class BlockListParser:
             all_shortcut_url_maps)
         self.remaining_regex = self._convert_to_regex(remaining_lines)
 
+    def __repr__(self):
+        return f"BlockListParser with {len(self.regex_lines)} entries"
+
     def get_num_classes(self):
         # always supports only binary classification, blocked or not blocked
         return 2
